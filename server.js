@@ -1,20 +1,13 @@
 var express = require('express');
+var bodyParser = require('body-parser');
+
 var app = express();
 var port = process.env.PORT || 3000;
+var nextTodoId = 1;
 
-var todos = [{
-    id: 1,
-    description:'Incontrare Mario a pranzo',
-    completed: false
-},{
-    id: 2,
-    description:'Andare al mercato',
-    completed: false
-},{
-    id: 3,
-    description:'Mangiare il gatto',
-    completed: true
-}];
+var todos = [];
+
+app.use(bodyParser.json());
 
 //GET todos
 app.get('/todos', function (req, res) {
@@ -23,17 +16,28 @@ app.get('/todos', function (req, res) {
 
 //GET todos/:id
 app.get('/todos/:id', function (req, res) {
-    
-    var searchId= parseInt(req.params.id,10);
-    
-    todos.forEach(function(todo) {
-        if(todo.id===searchId)
-        {
-            res.json(todo);   
+
+    var searchId = parseInt(req.params.id, 10);
+
+    todos.forEach(function (todo) {
+        if (todo.id === searchId) {
+            res.json(todo);
         }
     });
-        res.status(404).send();
+    res.status(404).send();
 });
+
+
+//POST todos
+app.post('/todos', function (req, res) {
+    var body = req.body;
+    body.id = nextTodoId++;
+    todos.push(body);
+    res.send(body);
+
+});
+
+
 
 
 app.get('/about', function (req, res) {
