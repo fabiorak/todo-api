@@ -46,6 +46,35 @@ app.post('/todos', function (req, res) {
 
 });
 
+//PUT todos/:id
+app.put('/todos/:id', function (req, res) {
+
+    var body = _.pick(req.body, 'description', 'completed');
+
+    var validAttributes = {};
+
+    var searchId = parseInt(req.params.id, 10);
+
+    var todo = _.findWhere(todos, { id: searchId });
+
+    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+        validAttributes.completed = body.completed;
+    } else if (body.hasOwnProperty('completed')) {
+        return res.status(400).send('completed deve essere boolean');
+    }
+    if (body.hasOwnProperty('description') && _.isString(body.description)) {
+        validAttributes.description = body.description;
+    } else if (body.hasOwnProperty('description')) {
+        return res.status(400).send('description deve essere string');
+    }
+
+
+    _.extend(todo, validAttributes);
+
+    res.send(todo);
+
+});
+
 
 //DELETE todos/:id
 app.delete('/todos/:id', function (req, res) {
