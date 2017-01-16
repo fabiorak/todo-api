@@ -12,7 +12,15 @@ app.use(bodyParser.json());
 
 //GET todos
 app.get('/todos', function (req, res) {
-    res.json(todos);
+    var queryParams = req.query;
+    var filteredTodos = todos;
+    if (queryParams.hasOwnProperty('completed')) {
+        if (queryParams.completed === 'false')
+            filteredTodos = _.where(filteredTodos, { 'completed': false });
+        else if (queryParams.completed === 'true')
+            filteredTodos = _.where(filteredTodos, { 'completed': true });
+    }
+    res.json(filteredTodos);
 });
 
 //GET todos/:id
