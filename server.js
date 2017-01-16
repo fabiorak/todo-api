@@ -47,6 +47,21 @@ app.post('/todos', function (req, res) {
 });
 
 
+//DELETE todos/:id
+app.delete('/todos/:id', function (req, res) {
+
+    var searchId = parseInt(req.params.id, 10);
+
+    var todo = _.findWhere(todos, { id: searchId });
+    if (todo) {
+        todos = _.without(todos, todo);
+        res.json(todo);
+    }
+    else {
+        res.status(404).send('Nessun todo trovato con id=' + searchId);
+    }
+});
+
 
 
 app.get('/about', function (req, res) {
