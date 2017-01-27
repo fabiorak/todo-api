@@ -44,13 +44,16 @@ app.get('/todos/:id', function (req, res) {
 
     var searchId = parseInt(req.params.id, 10);
 
-    var todo = _.findWhere(todos, { id: searchId });
-    if (todo) {
-        res.json(todo);
-    }
-    else {
-        res.status(404).send();
-    }
+    db.todo.findById(searchId).then(function (todo) {
+        if (!!todo) {
+            res.json(todo.toJSON());
+        } else {
+            res.status(404).send();
+        }
+    }, function (e) {
+        res.status(500).send();
+    });
+
 });
 
 
