@@ -85,29 +85,33 @@ app.post('/todos', function (req, res) {
 app.put('/todos/:id', function (req, res) {
 
     var body = _.pick(req.body, 'description', 'completed');
-
     var validAttributes = {};
-
     var searchId = parseInt(req.params.id, 10);
 
-    var todo = _.findWhere(todos, { id: searchId });
-
-    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+    if (body.hasOwnProperty('completed')) {
         validAttributes.completed = body.completed;
-    } else if (body.hasOwnProperty('completed')) {
-        return res.status(400).send('completed deve essere boolean');
     }
-    if (body.hasOwnProperty('description') && _.isString(body.description)) {
+
+    if (body.hasOwnProperty('description')) {
         validAttributes.description = body.description;
-    } else if (body.hasOwnProperty('description')) {
-        return res.status(400).send('description deve essere string');
     }
 
+    db.todo.findById(searchId).then(function (todo) {
 
-    _.extend(todo, validAttributes);
+        if (todo) {
+            todo.update(validAttributes).then(function (todo) {
+                res.json(todo.toJSON());
+            }, function (e) {
+                res.status(400).send();
+            });
+        }
+        else {
+            res.status(404).send();
+        }
 
-    res.send(todo);
-
+    }, function () {
+        res.status(500).send();
+    });
 });
 
 
